@@ -34,6 +34,10 @@
            (hr (ceiling r 2)))
       (- (mod (+ integer hr) r) hr))))
 
+;;
+;; Don't compiler these until you have tested without them. Inlining
+;; should be enough but for some implementations it helps
+;;
 #+nil
 (progn
   (define-compiler-macro wrap-signed-0 (&whole whole size integer)
@@ -46,7 +50,7 @@
                       (type integer ,gval))
              (let* ((,gtmp (ldb (byte ,size 0) ,gval)))
                (the (signed-byte ,size)
-                    (dpb ,gtmp (by) (- (ldb (byte 1 ,p) ,gtmp)))))))
+                    (dpb ,gtmp (byte 8 0) (- (ldb (byte 1 ,p) ,gtmp)))))))
         whole))
   (define-compiler-macro wrap-signed-1 (&whole whole size integer)
     (if (typep size 'unsigned-byte)
