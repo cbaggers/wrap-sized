@@ -33,7 +33,8 @@
         whole))
 
   (defun wrap-signed-2 (size integer)
-    (declare (unsigned-byte integer))
+    (declare (type unsigned-byte size)
+             (type integer integer))
     (let* ((r (expt 2 size))
            (hr (ceiling r 2)))
       (- (mod (+ hr integer) r) hr)))
@@ -46,7 +47,7 @@
 
 
 (defun test ()
-  (declare (optimize speed))
+  (declare (optimize (speed 3) (safety 1) (debug 1)))
   (let* ((c 10000)
          (arr (make-array c :element-type 'fixnum))
          (res0 0)
@@ -79,7 +80,7 @@
                  :do (incf res2 (wrap-signed-2 8 (aref arr j))))))
       (print "-----"))
 
-    (print "----------- ANOTHER GO ----------")
+    (print "----------- WITHOUT INLINING ----------")
     (locally
         (declare (notinline wrap-signed-0 wrap-signed-1 wrap-signed-2))
       (dotimes (z 2)
