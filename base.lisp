@@ -18,12 +18,19 @@
   (define-compiler-macro wrap-signed (size integer)
     (let* ((r (expt 2 size))
            (hr (ceiling r 2)))
-      `(locally (declare (optimize speed))
-         (- (mod (+ ,hr ,integer) ,r) ,hr)))))
+      `(- (mod (+ ,hr ,integer) ,r) ,hr))))
 
 (declaim (ftype (function (unsigned-byte integer) unsigned-byte)
                 wrap-unsigned)
          (inline wrap-unsigned))
+
+#+sbcl
+(defun wrap-unsigned (size integer)
+  (declare (type unsigned-byte size)
+           (type integer integer))
+  (sb-c::mask-field (byte size 0) integer))
+
+#-sbcl
 (defun wrap-unsigned (size integer)
   (declare (type unsigned-byte size)
            (type integer integer))
